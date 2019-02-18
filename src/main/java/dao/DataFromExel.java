@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 public class DataFromExel {
     private Workbook workbook;
@@ -79,7 +78,7 @@ public class DataFromExel {
                 order1.setDescription(value.get(2));
                 order1.setMoment(LocalDateTime.parse(value.get(3)));
                 order1.setSum(new BigDecimal(value.get(4)));
-                order1.setClientId(UUID.fromString(value.get(5)));
+                order1.setClientId(value.get(5));
                 orders.add(order1);
                 value.clear();
             } catch (Exception e) {

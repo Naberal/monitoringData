@@ -24,4 +24,20 @@ public class Order extends UUidModel {
     private Client client;
     @Transient
     private UUID clientId;
+
+    public void setClientId(String clientId) {
+        this.clientId = UUID.fromString(clientId);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" + super.toString() +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", moment=" + moment +
+                ", sum=" + sum +
+                ", client=" + client +
+                ", clientId=" + clientId +
+                '}';
+    }
 }
