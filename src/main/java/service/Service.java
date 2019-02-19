@@ -21,43 +21,43 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-public class Service extends TimerTask {
-    private String url = "https://online.moysklad.ru/api/remap/1.1/entity/customerorder/";
+public class Service {
+    private String url;
     private HttpClient client;
 
-    public Service() {
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("admin@max69", "61ae20975e");
+    public Service(Properties properties) {
+        url = properties.getProperty("url");
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(properties.getProperty("userName")
+                , properties.getProperty("password"));
         CredentialsProvider provider = new BasicCredentialsProvider();
         provider.setCredentials(AuthScope.ANY, credentials);
         client = HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build();
     }
 
-    public List<Order> getAll() {
+    public List<Order> getNewOrders() {
         List<Order> orders = new ArrayList<>();
         List<UUidModel> collect = new ArrayList();
-        HttpGet getId = new HttpGet(url);
+        HttpGet getIds = new HttpGet(url);
         try {
-            HttpResponse response = client.execute(getId);
+            HttpResponse response = client.execute(getIds);
             String line = new Scanner(response.getEntity().getContent()).findInLine("\"rows\".*");
-            String s = "{".concat(line);
-            HashMap<Object, JSONArray> hashMap = JSON.parseObject(s, HashMap.class);
+            String jsonLine = "{".concat(line);
+            HashMap<Object, JSONArray> hashMap = JSON.parseObject(jsonLine, HashMap.class);
             hashMap.values().stream()
                     .map(e -> e.toJavaList(UUidModel.class))
                     .forEach(collect::addAll);
-            orders = collect.stream()
-                    .map(this::getData)
-                    .collect(Collectors.toList());
-
+            collect.stream()
+                    .map(this::getOrder)
+                    .forEach(orders::add);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return orders;
     }
 
-    private Order getData(UUidModel model) {
-        Order order = null;
+    private Order getOrder(UUidModel model) {
+        Order order = new Order();
         HttpGet get = new HttpGet(url + "/" + model.getId().toString());
         try {
             HttpResponse response = client.execute(get);
@@ -69,12 +69,11 @@ public class Service extends TimerTask {
             LocalDate date = LocalDate.parse(dateLine);
             if (date.equals(LocalDate.of(2019, 2, 4))) {//todo LocalDate.now().minusDays(1)
                 order = JSON.parseObject(stream.toByteArray(), Order.class);
-                Pattern pattern = Pattern.compile("agent.*");
-                Matcher matcher = pattern.matcher(stream.toString());
+                Matcher matcher = Pattern.compile("agent.*").matcher(stream.toString());
                 if (matcher.find()) {
                     String agent = matcher.group();
-                    Pattern pattern1 = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b");
-                    Matcher matcher1 = pattern1.matcher(agent);
+                    Matcher matcher1 = Pattern.compile
+                            ("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b").matcher(agent);
                     if (matcher1.find()) {
                         order.setClientId(matcher1.group());
                     }
@@ -85,10 +84,5 @@ public class Service extends TimerTask {
         }
         get.reset();
         return order;
-    }
-
-    @Override
-    public void run() {
-        getAll();
     }
 }

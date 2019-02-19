@@ -1,7 +1,6 @@
 package model;
 
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -13,9 +12,8 @@ import java.util.UUID;
 @MappedSuperclass
 public class UUidModel {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "uuid2")
-    @Column(name = "id")
+    @GeneratedValue()
+    @Column(name = "id", unique = true)
     private UUID id;
 
     public void setId(String id) {

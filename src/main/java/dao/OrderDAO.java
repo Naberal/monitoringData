@@ -1,6 +1,6 @@
 package dao;
 
-import model.Client;
+import model.Order;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -9,28 +9,31 @@ import org.hibernate.cfg.Configuration;
 import java.util.List;
 import java.util.UUID;
 
-public class SaveClient {
+public class OrderDAO implements DAO<Order> {
     private SessionFactory factory;
 
-    public SaveClient() {
+    public OrderDAO() {
         this.factory = new Configuration().configure().buildSessionFactory();
     }
 
-    public void save(List<Client> list) {
+    @Override
+    public void save(List<Order> list) {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
-            for (Client client : list) {
-                session.save(client);
+            for (Order order : list) {
+                session.save(order);
             }
             transaction.commit();
         }
     }
 
-    public Client findByID(UUID uuid) {
-        Client client = null;
+    @Override
+    public Order getById(UUID uuid) {
+        Order order;
         try (Session session = factory.openSession()) {
-            client = session.get(Client.class, uuid);
+            order = session.get(Order.class, uuid);
         }
-        return client;
+        return order;
+
     }
 }

@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class DataFromExel {
+public class ExcelData {
     private Workbook workbook;
 
-    public DataFromExel(File file) {
+    public ExcelData(File file) {
         try {
             InputStream stream = new FileInputStream(file);
             if (file.getName().toLowerCase().endsWith("xlsx")) {
@@ -36,58 +36,54 @@ public class DataFromExel {
     }
 
     public List<Client> getClients() {
-        List<Client> clients = new ArrayList<>();
-        List<String> value = new ArrayList<>();
-        Sheet counterparty = workbook.getSheet("counterparty");
-        Iterator<Row> rowIterator = counterparty.rowIterator();
-        while (rowIterator.hasNext()) {
-            Iterator<Cell> cellIterator = rowIterator.next().cellIterator();
-            while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-                value.add(cell.getStringCellValue());
-            }
+        List<Client> clientsList = new ArrayList<>();
+        for (List<String> value : getData("counterparty")) {
             Client client = new Client();
             try {
                 client.setId(value.get(0));
                 client.setName(value.get(1));
-                clients.add(client);
+                clientsList.add(client);
                 value.clear();
             } catch (Exception e) {
                 value.clear();
-                continue;
             }
         }
-        return clients;
+        return clientsList;
     }
 
     public List<Order> getOrders() {
-        List<Order> orders = new ArrayList<>();
-        List<String> value = new ArrayList<>();
-        Sheet order = workbook.getSheet("order");
-        Iterator<Row> rowIterator = order.rowIterator();
+        List<Order> ordersList = new ArrayList<>();
+        for (List<String> values : getData("orders")) {
+            Order order = new Order();
+            try {
+                order.setId(values.get(0));
+                order.setName(values.get(1));
+                order.setDescription(values.get(2));
+                order.setMoment(LocalDateTime.parse(values.get(3)));
+                order.setSum(new BigDecimal(values.get(4)));
+                order.setClientId(values.get(5));
+                ordersList.add(order);
+                values.clear();
+            } catch (Exception e) {
+                values.clear();
+            }
+        }
+        return ordersList;
+    }
+
+    private List<List<String>> getData(String name) {
+        List<List<String>> listObjects = new ArrayList<>();
+        Sheet sheet = workbook.getSheet(name);
+        Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
+            List<String> object = new ArrayList<>();
             Iterator<Cell> cellIterator = rowIterator.next().cellIterator();
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
-                value.add(cell.getStringCellValue());
+                object.add(cell.getStringCellValue());
             }
-            Order order1 = new Order();
-            try {
-                order1.setId(value.get(0));
-                order1.setName(value.get(1));
-                order1.setDescription(value.get(2));
-                order1.setMoment(LocalDateTime.parse(value.get(3)));
-                order1.setSum(new BigDecimal(value.get(4)));
-                order1.setClientId(value.get(5));
-                orders.add(order1);
-                value.clear();
-            } catch (Exception e) {
-                value.clear();
-                continue;
-            }
+            listObjects.add(object);
         }
-        return orders;
+        return listObjects;
     }
-
-
 }

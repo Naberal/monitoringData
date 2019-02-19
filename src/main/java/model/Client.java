@@ -12,4 +12,11 @@ import javax.persistence.Table;
 public class Client extends UUidModel {
     @Column(name = "name")
     private String name;
+
+    @Override
+    public String toString() {
+        return "Client{" + super.toString() +
+                "name='" + name + '\'' +
+                '}';
+    }
 }
