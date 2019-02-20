@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "Khmelyar_Clients")
 public class Client extends UUidModel {
-    @Column(name = "name")
+    @Column(name = "name",columnDefinition = "NVARCHAR(100)")
     private String name;
 
     @Override
