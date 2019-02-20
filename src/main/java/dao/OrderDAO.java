@@ -1,5 +1,6 @@
 package dao;
 
+
 import model.Order;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -18,7 +19,7 @@ public class OrderDAO implements DAO<Order> {
 
     @Override
     public void save(List<Order> list) {
-        try (Session session = factory.openSession()) {
+       try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             for (Order order : list) {
                 session.save(order);

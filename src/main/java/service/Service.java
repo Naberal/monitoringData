@@ -67,7 +67,7 @@ public class Service {
                     .findInLine("\"moment\":\"(20\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]).*\"")
                     .substring(10, 20);
             LocalDate date = LocalDate.parse(dateLine);
-            if (date.equals(LocalDate.of(2019, 2, 4))) {//todo LocalDate.now().minusDays(1)
+            if (date.equals(LocalDate.now().minusDays(1))) {
                 order = JSON.parseObject(stream.toByteArray(), Order.class);
                 Matcher matcher = Pattern.compile("agent.*").matcher(stream.toString());
                 if (matcher.find()) {

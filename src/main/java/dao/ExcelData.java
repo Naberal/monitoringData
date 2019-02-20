@@ -74,6 +74,7 @@ public class ExcelData {
     private List<List<String>> getData(String name) {
         List<List<String>> listObjects = new ArrayList<>();
         Sheet sheet = workbook.getSheet(name);
+        sheet.removeRow(sheet.getRow(0));
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
             List<String> object = new ArrayList<>();

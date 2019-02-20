@@ -9,10 +9,8 @@ import service.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.time.Instant;
+import java.util.*;
 
 public class TimerController extends TimerTask {
     private Timer timer;
@@ -26,7 +24,7 @@ public class TimerController extends TimerTask {
             e.printStackTrace();
         }
         timer = new Timer();
-        timer.schedule(this, (long) (1.16 * Math.pow(10, 8)));
+        timer.schedule(this,Date.from(Instant.now()), (long) (1.16 * Math.pow(10, 8)));
     }
 
     @Override
