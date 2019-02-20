@@ -19,7 +19,7 @@ public class Order extends UUidModel {
     private LocalDateTime moment;
     @Column(name = "sum")
     private BigDecimal sum;
-    @ManyToOne(targetEntity = Client.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(targetEntity = Client.class,fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
     @Transient

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,10 +59,9 @@ public class ExcelData {
             try {
                 order.setId(values.get(0));
                 order.setName(values.get(1));
-                order.setDescription(values.get(2));
-                order.setMoment(LocalDateTime.parse(values.get(3)));
-                order.setSum(new BigDecimal(values.get(4)));
-                order.setClientId(values.get(5));
+                order.setMoment(LocalDateTime.parse(values.get(2), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                order.setSum(new BigDecimal(values.get(3)));
+                order.setClientId(values.get(4));
                 ordersList.add(order);
                 values.clear();
             } catch (Exception e) {

@@ -6,7 +6,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,8 +21,7 @@ public class ClientDAO implements DAO<Client> {
         try (Session session = factory.openSession()) {
             Transaction transaction = session.beginTransaction();
             for (Client client : list) {
-                Serializable save = session.save(client);
-                System.out.println(save.toString());
+                session.save(client);
             }
             transaction.commit();
         }

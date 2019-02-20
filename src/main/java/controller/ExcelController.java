@@ -18,14 +18,16 @@ public class ExcelController {
 
     public void saveExcelData() {
         ExcelData excelData = new ExcelData(file);
-        ClientDAO clientDAO = new ClientDAO();
         List<Client> clients = excelData.getClients();
-        clientDAO.save(clients);
         List<Order> orders = excelData.getOrders();
-        for (Order order : orders) {
-            Client byID = clientDAO.getById(order.getClientId());
-            order.setClient(byID);
+        for (Order order:orders){
+            for (Client client:clients){
+                if(client.getId().equals(order.getClientId())){
+                    order.setClient(client);
+                }
+            }
         }
+        new ClientDAO().save(clients);
         new OrderDAO().save(orders);
     }
 }
