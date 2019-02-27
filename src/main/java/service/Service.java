@@ -5,13 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import model.Order;
 import model.UUidModel;
 import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.poi.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -23,19 +18,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Service {
-    private String url;
     private HttpClient client;
 
-    public Service(Properties properties) {
-        url = properties.getProperty("url");
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(properties.getProperty("userName")
-                , properties.getProperty("password"));
-        CredentialsProvider provider = new BasicCredentialsProvider();
-        provider.setCredentials(AuthScope.ANY, credentials);
-        client = HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build();
+    public Service(HttpClient client) {
+        this.client = client;
     }
 
-    public List<Order> getNewOrders() {
+    public List<Order> getNewOrders(String url) {
         List<Order> orders = new ArrayList<>();
         List<UUidModel> collect = new ArrayList();
         HttpGet getIds = new HttpGet(url);
@@ -48,7 +37,7 @@ public class Service {
                     .map(e -> e.toJavaList(UUidModel.class))
                     .forEach(collect::addAll);
             collect.stream()
-                    .map(this::getOrder)
+                    .map(e -> getOrder(e, url))
                     .forEach(orders::add);
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,7 +45,7 @@ public class Service {
         return orders;
     }
 
-    private Order getOrder(UUidModel model) {
+    private Order getOrder(UUidModel model, String url) {
         Order order = new Order();
         HttpGet get = new HttpGet(url + "/" + model.getId().toString());
         try {

@@ -6,31 +6,20 @@ import model.Client;
 import model.Order;
 import service.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
 public class TimerController extends TimerTask {
-    private Timer timer;
-    private Properties properties = new Properties();
+    private Connection connection = new Connection();
 
     public void getNewOrders() {
-        try {
-            properties.load(new FileInputStream(new File("src/main/resources/application.properties")
-                    .getAbsoluteFile()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        timer = new Timer();
-        timer.schedule(this,Date.from(Instant.now()), (long) (1.16 * Math.pow(10, 8)));
+        new Timer().schedule(this, Date.from(Instant.now()), (long) (1.16 * Math.pow(10, 8)));
     }
 
     @Override
     public void run() {
-        Service service = new Service(properties);
-        List<Order> orders = service.getNewOrders();
+        Service service = new Service(connection.httpConnection());
+        List<Order> orders = service.getNewOrders(connection.getUrl());
         for (Order order : orders) {
             Client byID = new ClientDAO().getById(order.getClientId());
             order.setClient(byID);
